@@ -170,6 +170,11 @@
   (js-apply (eth web3) "isSyncing" args))
 
 
+(defn get-coinbase
+  [web3 & args]
+  (js-apply (eth web3) "getCoinbase" args))
+
+
 (def coinbase
   "This property is read only and returns the coinbase address where the mining
   rewards go to.
@@ -200,53 +205,14 @@
   (u/prop-or-clb-fn "eth" "mining"))
 
 
-(def hashrate
-  "This property is read only and returns the number of hashes per second that
-  the node is mining with.
-
-  Parameters:
-  web3 - web3 instance
-
-  Returns a number representing the hashes per second.
-
-  user> `(hashrate web3-instance (fn [err res] (when-not err (println res))))`
-  nil
-  user> 0
-  "
-  (u/prop-or-clb-fn "eth" "hashrate"))
+(defn get-hashrate
+  [web3 & args]
+  (js-apply (eth web3) "getHashrate" args))
 
 
-(def gas-price
-  "This property is read only and returns the current gas price. The gas price
-  is determined by the x latest blocks median gas price.
-
-  Parameters:
-  web3        - web3 instance
-  callback-fn - callback with two parameters, error and result
-
-  Returns a BigNumber instance of the current gas price in wei.
-
-  Example:
-  user> `(gas-price web3-instance (fn [err res] (when-not err (println res))))`
-  nil
-  user> #object[e 90000000000]"
-  (u/prop-or-clb-fn "eth" "gasPrice"))
-
-
-(def accounts
-  "This property is read only and returns a list of accounts the node controls.
-
-  Parameters:
-  web3        - web3 instance
-  callback-fn - callback with two parameters, error and result
-
-  Returns an array of addresses controlled by client.
-
-  Example:
-  user> `(accounts web3-instance (fn [err res] (when-not err (println res))))`
-  nil
-  user> `[0x85d85715218895ae964a750d9a92f13a8951de3d]`"
-  (u/prop-or-clb-fn "eth" "accounts"))
+(defn get-gas-price
+  [web3 & args]
+  (js-apply (eth web3) "getGasPrice" args))
 
 
 (def block-number
@@ -288,6 +254,11 @@
   callback-fn - callback with two parameters, error and result."
   [web3 address]
   (js-apply (eth web3) "unRegister" [address]))
+
+
+(defn get-accounts
+  [web3 & args]
+  (js-apply (eth web3) "getAccounts" args))
 
 
 (defn get-balance

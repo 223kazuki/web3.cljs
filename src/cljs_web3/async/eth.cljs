@@ -4,16 +4,18 @@
     [cljs-web3.eth :as web3-eth]
     [cljs-web3.utils :as u]))
 
+(def get-accounts (u/create-async-fn web3-eth/get-accounts))
+(def get-coinbase (u/create-async-fn web3-eth/get-coinbase))
+(def get-hashrate (u/create-async-fn web3-eth/get-hashrate))
+(def get-gas-price (u/create-async-fn web3-eth/get-gas-price))
+
 (def default-account web3-eth/default-account)
 (def set-default-account! web3-eth/set-default-account!)
 (def default-block web3-eth/default-block)
 (def set-default-block! web3-eth/set-default-block!)
 (def syncing (u/create-async-fn web3-eth/syncing))
 (def syncing? (u/create-async-fn web3-eth/syncing?))
-(def coinbase (u/create-async-fn web3-eth/coinbase))
 (def mining? (u/create-async-fn web3-eth/mining?))
-(def gas-price (u/create-async-fn web3-eth/gas-price))
-(def accounts (u/create-async-fn web3-eth/accounts))
 (def block-number (u/create-async-fn web3-eth/block-number))
 (def register (u/create-async-fn web3-eth/register))
 (def unregister (u/create-async-fn web3-eth/unregister))
