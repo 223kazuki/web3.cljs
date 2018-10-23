@@ -137,19 +137,7 @@
    (js-invoke (utils Web3) "isBN" big-number)))
 
 
-(defn big-number?
-  "Returns boolean.
-
-  Parameters:
-  object - An BN.js instance.
-  Web3   - (optional first argument) Web3 JavaScript object.
-
-  Example:
-  user> `(big-number? (bn 10))`
-  true"
-  ([big-number] (big-number? js/Web3 big-number))
-  ([Web3 big-number]
-   (js-invoke (utils Web3) "isBigNumber" big-number)))
+(def big-number? bn?)
 
 
 (defn sha3
@@ -276,7 +264,7 @@
   false
   user> `(hex? \"Hello\")`
   false"
-  ([hex] (hex? js/Web3 hex))
+  ([hex] (hex-strict? js/Web3 hex))
   ([Web3 hex]
    (js-apply (utils Web3) "isHexStrict" [hex])))
 
@@ -304,8 +292,39 @@
    (js-apply (utils Web3) "isAddress" [address])))
 
 
-(defn to-checksum-address [])
-(defn check-address-checksum [])
+(defn to-checksum-address
+  "Returns the checksum address.
+
+  Parameters:
+  address - An HEX address string.
+  Web3    - (Optional first argument) Web3 JavaScript object
+
+  Will convert an upper or lowercase Ethereum address to a checksum address.
+
+  Example:
+  user> `(to-checksum-address \"0xc1912fee45d61c87cc5ea59dae31190fffff2323\")`
+  \"0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d\"
+  user> `(to-checksum-address \"0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D\")`
+  \"0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d\" ;; same as above"
+  ([address] (to-checksum-address js/Web3 address))
+  ([Web3 address]
+   (js-apply (utils Web3) "toChecksumAddress" [address])))
+
+
+(defn check-address-checksum
+  "Returns true if the checksum of the address is valid, false if its not a
+  checksum address, or the checksum is invalid.
+
+  Parameters:
+  address - An HEX address string.
+  Web3    - (Optional first argument) Web3 JavaScript object
+
+  Example:
+  user> `(check-address-checksum \"0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d\")`
+  true"
+  ([address] (to-checksum-address js/Web3 address))
+  ([Web3 address]
+   (js-apply (utils Web3) "toChecksumAddress" [address])))
 
 
 (defn to-hex
@@ -339,7 +358,19 @@
    (js-invoke (utils Web3) "toBN" number)))
 
 
-(defn hex-to-number-string [])
+(defn hex-to-number-string
+  "Returns the number representation of a given HEX value as a string.
+
+  Parameters:
+  string|hex  - A hex string to hash.
+  Web3        - (optional first argument) Web3 JavaScript object.
+
+  Example:
+  user> `(hex-to-number \"0xea\")`
+  \"234\""
+  ([hex] (hex-to-number-string js/Web3 hex))
+  ([Web3 hex]
+   (js-apply (utils Web3) "hexToNumberString" [hex])))
 
 
 (defn hex-to-number
@@ -372,7 +403,21 @@
    (js-apply (utils Web3) "numberToHex" [number])))
 
 
-(defn hex-to-utf8 [])
+(defn hex-to-utf8
+  "Returns the UTF-8 string representation of a given HEX value.
+
+  Parameters:
+  string - A HEX string to convert to a UTF-8 string.
+  Web3   - (optional first argument) Web3 JavaScript object.
+
+  Example:
+  user> `(hex-to-utf8 \"0x49206861766520313030e282ac\")`
+  \"I have 100€\""
+  ([hex] (hex-to-utf8 js/Web3 hex))
+  ([Web3 hex]
+   (js-apply (utils Web3) "hexToUtf8" [hex])))
+
+
 (def hex-to-string hex-to-utf8)
 
 
@@ -391,7 +436,21 @@
    (js-apply (utils Web3) "hexToAscii" [hex])))
 
 
-(defn utf8-to-hex [])
+(defn utf8-to-hex
+  "Returns the HEX representation of a given UTF-8 string.
+
+  Parameters:
+  string  - A HEX string.
+  Web3    - (optional first argument) Web3 JavaScript object.
+
+  Example:
+  user> `(ascii-to-hex \"I have 100€\")`
+  \"0x49206861766520313030e282ac\""
+  ([string] (utf8-to-hex js/Web3 string))
+  ([Web3 string]
+   (js-apply (utils Web3) "utf8ToHex" [string])))
+
+
 (def string-to-hex utf8-to-hex)
 
 
@@ -410,8 +469,35 @@
    (js-apply (utils Web3) "asciiToHex" [string])))
 
 
-(defn hex-to-bytes [])
-(defn bytes-to-hex [])
+(defn hex-to-bytes
+  "Returns a byte array from the given HEX string.
+
+  Parameters:
+  string  - A HEX string to convert to a UTF-8 string.
+  Web3    - (optional first argument) Web3 JavaScript object.
+
+  Example:
+  user> `(hex-to-bytes \"0x000000ea\")`
+  [0 0 0 234]"
+  ([hex] (hex-to-bytes js/Web3 hex))
+  ([Web3 hex]
+   (js-apply (utils Web3) "hexToBytes" [hex])))
+
+
+(defn bytes-to-hex
+  "Returns a HEX string from a byte array.
+
+  Parameters:
+  array - A byte array to convert.
+  Web3  - (optional first argument) Web3 JavaScript object.
+
+  Example:
+  user> `(bytes-to-hex [72 101 108 108 111 33 36])`
+  \"0x48656c6c6f2124\""
+  ([byte-array] (bytes-to-hex js/Web3 byte-array))
+  ([Web3 byte-array]
+   (js-apply (utils Web3) "bytesToHex" [byte-array])))
+
 
 (defn to-wei
   "Converts an Ethereum unit into Wei.
@@ -457,7 +543,11 @@
    (js-apply (utils Web3) "fromWei" [number (name unit)])))
 
 
-(defn unit-map [])
+(defn unit-map
+  "Shows all possible ether value and their amount in wei."
+  ([] (unit-map js/Web3))
+  ([Web3]
+   (js->cljkk (aget (utils Web3) "unitMap"))))
 
 
 (defn pad-left
@@ -506,4 +596,25 @@
 
 
 (def right-pad pad-right)
-(defn to-twos-complement [])
+
+(defn to-twos-complement
+  "Converts a negative numer into a two’s complement.
+
+  Parameters:
+  number|string|bigNumber - The number to convert.
+  Web3                    - (optional first argument) Web3 JavaScript object.
+
+  Example:
+  user> `(to-twos-complement \"-1\")`
+  \"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"
+  user> `(to-twos-complement -1)`
+  \"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"
+  user> `(to-twos-complement \"0x1\")`
+  \"0x0000000000000000000000000000000000000000000000000000000000000001\"
+  user> `(to-twos-complement -15)`
+  \"0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1\"
+  user> `(to-twos-complement \"-0x1\")`
+  \"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\""
+  ([number] (to-twos-complement js/Web3 number))
+  ([Web3 number]
+   (js-apply (utils Web3) "toTwosComplement" [number])))
