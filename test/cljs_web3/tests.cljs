@@ -12,7 +12,7 @@
             [print.foo :include-macros true])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(def w3 (web3/create-web3 "http://localhost:8549/"))
+(def w3 (web3/create-web3 "ws://localhost:8549/"))
 (def gas-limit 4500000)
 
 (def contract-source "
@@ -25,8 +25,7 @@
   }")
 
 (deftest web3-test
-  (is (string? (web3/version-api w3)))
-  #_ (is (string? (web3/version-ethereum w3))) ;; Not working with testrpc
+  (is (string? (web3/version w3)))
   (is (web3/current-provider w3))
 
   #_ (is (web3-personal/unlock-account w3 (web3-eth/default-account w3) "m" 999999))

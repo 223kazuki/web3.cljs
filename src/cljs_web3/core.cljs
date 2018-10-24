@@ -12,114 +12,35 @@
   2. Created via `create-web3` (when running a local Ethereum node)
 
   `(def web3-instance
-     (create-web3 \"http://localhost:8545/\"))`
+     (create-web3 \"ws://localhost:8545/\"))`
 
   The Web3 JavaScript object is provided on the browser window."
   (:require [cljs-web3.utils :as u :refer [js-apply js-prototype-apply]]
             [goog.object]
             [web3-1.0]))
 
-(def version-api
-  "Returns a string representing the Ethereum js api version.
+(defn version
+  "Returns the current version."
+  [web3]
+  (aget web3 "version"))
 
-  Parameters:
-  Web3        - web3 instance
-  callback-fn - callback with two parameters, error and result
+(defn modules
+  "Return an object with the classes of all major sub modules, to be able to instantiate them manually."
+  [web3]
+  (aget web3 "modules"))
 
-  Example:
-  user> `(web3/version-node web3-instance
-           (fn [err res] (when-not err (println res))))`
-  nil
-  user> 0.2.0"
-  (u/prop-or-clb-fn "version"))
+(defn utils
+  "Returns a list of modules:
 
+  Eth - Function: the Eth module for interacting with the Ethereum network see web3.eth for more.
+  Net - Function: the Net module for interacting with network properties see web3.eth.net for more.
+  Personal - Function: the Personal module for interacting with the Ethereum accounts see web3.eth.personal for more.
+  Shh - Function: the Shh module for interacting with the whisper protocol see web3.shh for more.
+  Bzz - Function: the Bzz module for interacting with the swarm network see web3.bzz for more."
+  [web3]
+  (aget web3 "utils"))
 
-(def version-node
-  "Returns a string representing the client/node version.
-
-  Parameters:
-  Web3        - web3 instance
-  callback-fn - callback with two parameters, error and result
-
-  Example:
-  user> `(version-node web3-instance
-           (fn [err res] (when-not err (println res))))`
-  nil
-  user> MetaMask/v3.10.8"
-  (u/prop-or-clb-fn "version" "node"))
-
-
-(def version-network
-  "Returns a string representing the network protocol version.
-
-  \"1\"  is Main Net or Local Net
-  \"2\"  is (Deprecated) Morden Network
-  \"3\"  is Ropsten Test Net
-  \"4\"  is Rinkeby Test Net
-  \"42\" is Kovan Test Net
-
-  Parameters:
-  Web3        - Web3 instance
-  callback-fn - callback with two parameters, error and result
-
-  Example:
-  user> `(version-network web3-instance
-           (fn [err res] (when-not err (println res))))`
-  nil
-  user> 3"
-  (u/prop-or-clb-fn "version" "network"))
-
-(def version-ethereum
-  "Returns a hexadecimal string representing the Ethereum protocol version.
-
-  Parameters:
-  web3        - web3 instance
-  callback-fn - callback with two parameters, error and result
-
-  Example:
-  user> `(version-ethereum web3-instance
-           (fn [err res] (when-not err (println res))))`
-  nil
-  user> 0x3f"
-  (u/prop-or-clb-fn "version" "ethereum"))
-
-
-(def version-whisper
-  "Returns a string representing the Whisper protocol version.
-
-  Parameters:
-  web3        - web3 instance
-  callback-fn - callback with two parameters, error and result
-
-  Example:
-  user> `(version-whisper
-           web3-instance
-           (fn [err res] (when-not err (println res))))`
-  nil
-  user> 20"
-  (u/prop-or-clb-fn "version" "whisper"))
-
-
-(defn reset
-  "Should be called to reset the state of web3. Resets everything except the manager.
-  Uninstalls all filters. Stops polling.
-
-  Parameters:
-  web3             - An instance of web3
-  keep-is-syncing? - If true it will uninstall all filters, but will keep the
-                     web3.eth.isSyncing() polls
-
-  Returns nil.
-
-  Example:
-  user> `(reset web3-instance true)`
-  nil"
-  ([web3]
-   (reset web3 false))
-  ([web3 keep-is-syncing?]
-   (js-apply web3 "reset" [keep-is-syncing?])))
-
-(defn set-provider
+(defn set-provider!
   "Should be called to set provider.
 
   Parameters:
@@ -129,13 +50,24 @@
   Available providers in web3-cljs:
   - `http-provider`
   - `ipc-provider`
+  - `websocket-provider`
 
   Example:
-  user> `(set-provider web3-instance
-                       (http-provider web3-instance \"http://localhost:8545\"))`
+  user> `(set-provider! web3-instance
+                        (websocket-provider web3-instance \"ws://localhost:8545\"))`
   nil"
   [web3 provider]
   (js-apply web3 "setProvider" [provider]))
+
+(defn providers
+  "Returns the current available providers."
+  [web3]
+  (aget web3 "providers"))
+
+(defn given-provider
+  "Returns the given provider set or nil"
+  [web3]
+  (aget web3 "givenProvider"))
 
 (defn current-provider
   "Will contain the current provider, if one is set. This can be used to check
@@ -170,16 +102,29 @@
   (let [constructor (aget Web3 "providers" "IpcProvider")]
     (constructor. uri)))
 
+(defn websocket-provider [Web3 uri]
+  (let [constructor (aget Web3 "providers" "WebsocketProvider")]
+    (constructor. uri)))
+
 (defn create-web3
-  "Creates a web3 instance using an `http-provider`.
+  "Creates a web3 instance using an `websocket-provider`.
 
   Parameters:
-  url  - The URL string for which to create the provider.
+  url  - The URL string for which to create the websocket provider.
   Web3 - (Optional first argument) Web3 JavaScript object
 
   Example:
-  user> `(create-web3 \"http://localhost:8545/\")`
+  user> `(create-web3 \"ws://localhost:8545/\")`
   <web3 instance>"
   ([url] (create-web3 js/Web3 url))
   ([Web3 url]
-   (new Web3 (http-provider Web3 url))))
+   (new Web3 (websocket-provider Web3 url))))
+
+(defn batch-request
+  "Create and execute batch requests.
+
+  Parameters:
+  web3 - web3 instance"
+  [Web3]
+  (let [constructor (aget Web3 "BatchRequest")]
+    (constructor.)))
