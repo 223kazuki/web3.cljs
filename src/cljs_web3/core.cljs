@@ -25,18 +25,18 @@
   (aget web3 "version"))
 
 (defn modules
-  "Return an object with the classes of all major sub modules, to be able to instantiate them manually."
-  [web3]
-  (aget web3 "modules"))
-
-(defn utils
-  "Returns a list of modules:
+  "Return an object with the classes of all major sub modules, to be able to instantiate them manually.
 
   Eth - Function: the Eth module for interacting with the Ethereum network see web3.eth for more.
   Net - Function: the Net module for interacting with network properties see web3.eth.net for more.
   Personal - Function: the Personal module for interacting with the Ethereum accounts see web3.eth.personal for more.
   Shh - Function: the Shh module for interacting with the whisper protocol see web3.shh for more.
   Bzz - Function: the Bzz module for interacting with the swarm network see web3.bzz for more."
+  [web3]
+  (aget web3 "modules"))
+
+(defn utils
+  "Utility functions are also exposes on the Web3 class object directly."
   [web3]
   (aget web3 "utils"))
 

@@ -97,29 +97,59 @@
 (deftest web3-eth-test
   (async done
     (go
+      (let [[err accounts] (<! (web3-eth-async/get-accounts w3))
+            code "603d80600c6000396000f3007c01000000000000000000000000000000000000000000000000000000006000350463c6888fa18114602d57005b6007600435028060005260206000f3"
+            default-account (first accounts)]
+        (-> (web3-eth/send-transaction! w3 {:from default-account
+                                            :data code})
+            (web3-utils/then
+             (fn [{:keys [:contract-address]}]
+               (-> (web3-eth/send-transaction! w3 {:from default-account
+                                                   :to contract-address
+                                                   :data "1000000000000000"})
+                   (web3-utils/on :transaction-hash
+                                  (fn [hash]
+                                    (is (web3-utils/hex? hash))
+                                    (done)))))))))))
+
+(deftest web3-eth-async-test
+  (async done
+    (go
+      (let [[err version] (<! (web3-eth-async/get-protocol-version w3))]
+        (is (not (js/isNaN (js/parseInt version)))))
       (let [[err accounts] (<! (web3-eth-async/get-accounts w3))]
         (is (seq accounts))
         (web3-eth/set-default-account! w3 (first accounts))
         (is (= (web3-eth/default-account w3) (first accounts))))
-      (is (web3-eth/default-block w3))
-      (let [[err syncing?] (<! (web3-eth-async/syncing? w3))]
-        (is (not syncing?))) ;; TODO: Check syncing.
-      (let [[err coinbase] (<! (web3-eth-async/get-coinbase w3))]
-        (is coinbase))
-      (let [[err hashrate] (<! (web3-eth-async/get-hashrate w3))]
-        (is (number? hashrate)))
-
-      #_ (is (web3-net/listening? w3))
-      #_ (is (number? (web3-net/peer-count w3)))
-
-      (let [[err gas-price] (<! (web3-eth-async/get-gas-price w3))]
-        (is (number? (js/parseInt gas-price))))
-      (let [[err coinbase] (<! (web3-eth-async/get-coinbase w3))
-            [err balance] (<! (web3-eth-async/get-balance w3 coinbase))]
-        (is (number? (js/parseInt balance))))
-
-      (let [[err block] (<! (web3-eth-async/get-block w3 "latest"))]
-        (is (map? block)))
-      #_ (is (seq (web3-eth/get-compilers w3)))
-
       (done))))
+
+
+#_(deftest web3-eth-test
+    (async done
+      (go
+        (let [[err accounts] (<! (web3-eth-async/get-accounts w3))]
+          (is (seq accounts))
+          (web3-eth/set-default-account! w3 (first accounts))
+          (is (= (web3-eth/default-account w3) (first accounts))))
+        (is (web3-eth/default-block w3))
+        (let [[err syncing?] (<! (web3-eth-async/syncing? w3))]
+          (is (not syncing?))) ;; TODO: Check syncing.
+        (let [[err coinbase] (<! (web3-eth-async/get-coinbase w3))]
+          (is coinbase))
+        (let [[err hashrate] (<! (web3-eth-async/get-hashrate w3))]
+          (is (number? hashrate)))
+
+        #_ (is (web3-net/listening? w3))
+        #_ (is (number? (web3-net/peer-count w3)))
+
+        (let [[err gas-price] (<! (web3-eth-async/get-gas-price w3))]
+          (is (number? (js/parseInt gas-price))))
+        (let [[err coinbase] (<! (web3-eth-async/get-coinbase w3))
+              [err balance] (<! (web3-eth-async/get-balance w3 coinbase))]
+          (is (number? (js/parseInt balance))))
+
+        (let [[err block] (<! (web3-eth-async/get-block w3 "latest"))]
+          (is (map? block)))
+        #_ (is (seq (web3-eth/get-compilers w3)))
+
+        (done))))

@@ -70,6 +70,13 @@
                                (go (>! ch [err res])))]))
       ch)))
 
+(defn then [promise callback]
+  (.then promise #(callback (js->cljkk %))))
+
+(defn on [promise event callback]
+  (.on promise (camel-case (name event))
+       #(callback (js->cljkk %))))
+
 (defn utils
   "Gets utils object from web3-instance.
 
