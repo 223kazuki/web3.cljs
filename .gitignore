@@ -13,3 +13,4 @@ pom.xml.asc
 /resources/public/js/
 /.idea/
 /node_modules/
+*.log

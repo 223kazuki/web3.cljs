@@ -1,4 +1,4 @@
-(ns cljs-web3.utils
+(ns web3.utils
   (:require [camel-snake-kebab.core :as cs :include-macros true]
             [camel-snake-kebab.extras :refer [transform-keys]]
             [cljs.core.async :refer [>! chan]]
@@ -108,7 +108,6 @@
   ([Web3 size]
    (js-apply (utils Web3) "randomHex" [size])))
 
-
 (defn bn
   "Returns the BN.js instance.
 
@@ -128,7 +127,6 @@
    (let [constructor (aget Web3 "utils" "BN")]
      (new constructor mixed))))
 
-
 (defn bn?
   "Returns boolean.
 
@@ -143,9 +141,7 @@
   ([Web3 big-number]
    (js-invoke (utils Web3) "isBN" big-number)))
 
-
 (def big-number? bn?)
-
 
 (defn sha3
   "Returns a string representing the Keccak-256 SHA3 of the given data.
@@ -169,9 +165,7 @@
   ([Web3 string]
    (js-apply (utils Web3) "sha3" [string])))
 
-
 (def keccak256 sha3)
-
 
 (defn solidity-sha3
   "Returns a string representing the SHA3 of the given data in the same way solidity would.
@@ -222,7 +216,6 @@
     (js-apply (utils (first args)) "soliditySha3" (rest args))
     (js-apply (utils js/Web3) "soliditySha3" args)))
 
-
 (defn hex?
   "Returns a boolean representing if a given string is a HEX string.
 
@@ -247,7 +240,6 @@
   ([hex] (hex? js/Web3 hex))
   ([Web3 hex]
    (js-apply (utils Web3) "isHex" [hex])))
-
 
 (defn hex-strict?
   "Returns a boolean representing if a given string is a HEX string.
@@ -275,7 +267,6 @@
   ([Web3 hex]
    (js-apply (utils Web3) "isHexStrict" [hex])))
 
-
 (defn address?
   "Returns a boolean indicating if the given string is an address.
 
@@ -298,7 +289,6 @@
   ([Web3 address]
    (js-apply (utils Web3) "isAddress" [address])))
 
-
 (defn to-checksum-address
   "Returns the checksum address.
 
@@ -317,7 +307,6 @@
   ([Web3 address]
    (js-apply (utils Web3) "toChecksumAddress" [address])))
 
-
 (defn check-address-checksum
   "Returns true if the checksum of the address is valid, false if its not a
   checksum address, or the checksum is invalid.
@@ -332,7 +321,6 @@
   ([address] (to-checksum-address js/Web3 address))
   ([Web3 address]
    (js-apply (utils Web3) "toChecksumAddress" [address])))
-
 
 (defn to-hex
   "Returns hexadecimal string representation of any value
@@ -349,7 +337,6 @@
   ([Web3 any]
    (js-apply (utils Web3) "toHex" [any])))
 
-
 (defn to-bn
   "Returns the BN.js instance.
 
@@ -363,7 +350,6 @@
   ([number] (to-bn js/Web3 number))
   ([Web3 number]
    (js-invoke (utils Web3) "toBN" number)))
-
 
 (defn hex-to-number-string
   "Returns the number representation of a given HEX value as a string.
@@ -379,7 +365,6 @@
   ([Web3 hex]
    (js-apply (utils Web3) "hexToNumberString" [hex])))
 
-
 (defn hex-to-number
   "Returns the number representation of a given HEX value.
 
@@ -393,7 +378,6 @@
   ([hex] (hex-to-number js/Web3 hex))
   ([Web3 hex]
    (js-apply (utils Web3) "hexToNumber" [hex])))
-
 
 (defn number-to-hex
   "Returns the HEX representation of a given number value.
@@ -409,7 +393,6 @@
   ([Web3 number]
    (js-apply (utils Web3) "numberToHex" [number])))
 
-
 (defn hex-to-utf8
   "Returns the UTF-8 string representation of a given HEX value.
 
@@ -424,9 +407,7 @@
   ([Web3 hex]
    (js-apply (utils Web3) "hexToUtf8" [hex])))
 
-
 (def hex-to-string hex-to-utf8)
-
 
 (defn hex-to-ascii
   "Returns the UTF-8 string representation of a given HEX value.
@@ -442,7 +423,6 @@
   ([Web3 hex]
    (js-apply (utils Web3) "hexToAscii" [hex])))
 
-
 (defn utf8-to-hex
   "Returns the HEX representation of a given UTF-8 string.
 
@@ -457,9 +437,7 @@
   ([Web3 string]
    (js-apply (utils Web3) "utf8ToHex" [string])))
 
-
 (def string-to-hex utf8-to-hex)
-
 
 (defn ascii-to-hex
   "Returns the HEX representation of a given ASCII string.
@@ -475,7 +453,6 @@
   ([Web3 string]
    (js-apply (utils Web3) "asciiToHex" [string])))
 
-
 (defn hex-to-bytes
   "Returns a byte array from the given HEX string.
 
@@ -490,7 +467,6 @@
   ([Web3 hex]
    (js-apply (utils Web3) "hexToBytes" [hex])))
 
-
 (defn bytes-to-hex
   "Returns a HEX string from a byte array.
 
@@ -504,7 +480,6 @@
   ([byte-array] (bytes-to-hex js/Web3 byte-array))
   ([Web3 byte-array]
    (js-apply (utils Web3) "bytesToHex" [byte-array])))
-
 
 (defn to-wei
   "Converts an Ethereum unit into Wei.
@@ -527,7 +502,6 @@
   ([Web3 number unit]
    (js-apply (utils Web3) "toWei" [number (name unit)])))
 
-
 (defn from-wei
   "Converts a number of Wei into an Ethereum unit.
 
@@ -549,13 +523,11 @@
   ([Web3 number unit]
    (js-apply (utils Web3) "fromWei" [number (name unit)])))
 
-
 (defn unit-map
   "Shows all possible ether value and their amount in wei."
   ([] (unit-map js/Web3))
   ([Web3]
    (js->cljkk (aget (utils Web3) "unitMap"))))
-
 
 (defn pad-left
   "Returns input string with zeroes or sign padded to the left.
@@ -577,9 +549,7 @@
   ([Web3 string chars sign]
    (js-apply (utils Web3) "padLeft" [string chars sign])))
 
-
 (def left-pad pad-left)
-
 
 (defn pad-right
   "Returns input string with zeroes or sign padded to the right.
@@ -600,7 +570,6 @@
   ([string chars sign] (pad-right js/Web3 string chars sign))
   ([Web3 string chars sign]
    (js-apply (utils Web3) "padRight" [string chars sign])))
-
 
 (def right-pad pad-right)
 

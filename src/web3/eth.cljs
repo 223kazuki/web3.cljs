@@ -1,7 +1,6 @@
-(ns cljs-web3.eth
+(ns web3.eth
   "Contains the ethereum blockchain related methods."
-  (:require [cljs-web3.utils :as u :refer [js-apply]]))
-
+  (:require [web3.utils :as u :refer [js-apply]]))
 
 (defn eth
   "Gets eth object from web3-instance.
@@ -10,7 +9,6 @@
   web3 - web3 instance"
   [web3]
   (aget web3 "eth"))
-
 
 (defn set-provider!
   "Should be called to set provider.
@@ -31,18 +29,15 @@
   [web3 provider]
   (js-apply (eth web3) "setProvider" [provider]))
 
-
 (defn providers
   "Returns the current available providers."
   [web3]
   (aget (eth web3) "providers"))
 
-
 (defn given-provider
   "Returns the given provider set or nil"
   [web3]
   (aget (eth web3) "givenProvider"))
-
 
 (defn current-provider
   "Will contain the current provider, if one is set. This can be used to check
@@ -55,7 +50,6 @@
   [web3]
   (aget (eth web3) "currentProvider"))
 
-
 (defn batch-request
   "Create and execute batch requests.
 
@@ -65,9 +59,7 @@
   (let [constructor (aget Web3 "eth" "BatchRequest")]
     (constructor.)))
 
-
 #_ (defn extend [])
-
 
 (defn default-account
   "Gets the default address that is used for the following methods (optionally
@@ -75,8 +67,8 @@
 
   - `send-transaction!`
   - `call!`
-  - `cljs-web3.eth.contract/call!`
-  - `cljs-web3.eth.contract/send!`
+  - `web3.eth.contract/call!`
+  - `web3.eth.contract/send!`
 
   Parameters:
   web3 - web3 instance
@@ -89,15 +81,14 @@
   [web3]
   (aget web3 "eth" "defaultAccount"))
 
-
 (defn set-default-account!
   "Sets the default address that is used for the following methods (optionally
   you can overwrite it by specifying the :from key in their options map):
 
   - `send-transaction!`
   - `call!`
-  - `cljs-web3.eth.contract/call!`
-  - `cljs-web3.eth.contract/send!`
+  - `web3.eth.contract/call!`
+  - `web3.eth.contract/send!`
 
   Parameters:
   web3    - web3 instance
@@ -112,7 +103,6 @@
   [web3 hex-str]
   (aset (eth web3) "defaultAccount" hex-str))
 
-
 (defn default-block
   "This default block is used for the following methods (optionally you can
   override it by passing the default-block parameter):
@@ -123,7 +113,7 @@
   - `get-storageAt`
   - `call!`
   - `estimate-gas`
-  - `cljs-web3.eth.contract/call!`
+  - `web3.eth.contract/call!`
 
   Parameters:
   web3 - web3 instance
@@ -140,7 +130,6 @@
   [web3]
   (aget web3 "eth" "defaultBlock"))
 
-
 (defn set-default-block!
   "Sets default block that is used for the following methods (optionally you can
   override it by passing the default-block parameter):
@@ -151,7 +140,7 @@
   - `get-storageAt`
   - `call!`
   - `estimate-gas`
-  - `cljs-web3.eth.contract/call!`
+  - `web3.eth.contract/call!`
 
   Parameters:
   web3  - web3 instance
@@ -168,7 +157,6 @@
   [web3 block]
   (aset (eth web3) "defaultBlock" block))
 
-
 (defn get-protocol-version
   "Get the ethereum protocol version of the node.
 
@@ -183,7 +171,6 @@
   user> `63`"
   [web3 & args]
   (js-apply (eth web3) "getProtocolVersion" args))
-
 
 (defn syncing?
   "Checks if the node is currently syncing and returns either a syncing object,
@@ -209,7 +196,6 @@
   [web3 & args]
   (js-apply (eth web3) "isSyncing" args))
 
-
 (defn get-coinbase
   "Get the coinbase address to which mining rewards will go.
 
@@ -226,7 +212,6 @@
   user> `\"0x85d85715218895ae964a750d9a92f13a8951de3d\"`"
   [web3 & args]
   (js-apply (eth web3) "getCoinbase" args))
-
 
 (defn mining?
   "Checks whether the node is mining or not.
@@ -245,7 +230,6 @@
   [web3 & args]
   (js-apply (eth web3) "isMining" args))
 
-
 (defn get-hashrate
   "Get the number of hashes per second that the node is mining with.
 
@@ -261,7 +245,6 @@
   user> `0`"
   [web3 & args]
   (js-apply (eth web3) "getHashrate" args))
-
 
 (defn get-gas-price
   "Get the current gas price oracle. The gas price is determined by the last
@@ -280,7 +263,6 @@
   [web3 & args]
   (js-apply (eth web3) "getGasPrice" args))
 
-
 (defn get-accounts
   "Get a list of accounts the node controls.
 
@@ -297,7 +279,6 @@
   [web3 & args]
   (js-apply (eth web3) "getAccounts" args))
 
-
 (defn get-block-number
   "Get the current block number.
 
@@ -313,7 +294,6 @@
   user> `1783426`"
   [web3 & args]
   (js-apply (eth web3) "getBlockNumber" args))
-
 
 (defn get-balance
   "Get the balance of an address at a given block.
@@ -336,7 +316,6 @@
   user> `\"1000000000000\"`"
   [web3 & [address default-block :as args]]
   (js-apply (eth web3) "getBalance" args))
-
 
 (defn get-storage-at
   "Get the storage at a specific position of an address.
@@ -362,7 +341,6 @@
   [web3 & [address position default-block :as args]]
   (js-apply (eth web3) "getStorageAt" args))
 
-
 (defn get-code
   "Get the code at a specific address.
 
@@ -385,7 +363,6 @@
   user> `0x`"
   [web3 & [address default-block :as args]]
   (js-apply (eth web3) "getCode" args))
-
 
 (defn get-block
   "Get a block matching the block number or block hash.
@@ -434,7 +411,6 @@
   [web3 & [block-hash-or-number return-transaction-objects? :as args]]
   (js-apply (eth web3) "getBlock" args))
 
-
 (defn get-block-transaction-count
   "Get the number of transaction in a given block.
 
@@ -456,7 +432,6 @@
   user> `0`"
   [web3 & [block-hash-or-number :as args]]
   (js-apply (eth web3) "getBlockTransactionCount" args))
-
 
 (defn get-uncle
   "Get a blocks uncle by a given uncle index position.
@@ -480,7 +455,6 @@
   Note: An uncle doesn’t contain individual transactions"
   [web3 & [block-hash-or-number uncle-number return-transaction-objects? :as args]]
   (js-apply (eth web3) "getUncle" args))
-
 
 (defn get-transaction
   "Get a transaction matching the given transaction hash.
@@ -525,7 +499,6 @@
   [web3 & [transaction-hash :as args]]
   (js-apply (eth web3) "getTransaction" args))
 
-
 (defn get-transaction-from-block
   "Get a transaction based on a block hash or number and the transactions index position.
 
@@ -550,7 +523,6 @@
   user> ;; see `get-transaction`"
   [web3 & [block-hash-or-number index :as args]]
   (js-apply (eth web3) "getTransactionFromBlock" args))
-
 
 (defn get-transaction-receipt
   "Get the receipt of a transaction by transaction hash.
@@ -599,7 +571,6 @@
   [web3 & [transaction-hash :as args]]
   (js-apply (eth web3) "getTransactionReceipt" args))
 
-
 (defn get-transaction-count
   "Get the numbers of transactions sent from this address.
 
@@ -620,7 +591,6 @@
   user> `1`"
   [web3 & [address default-block :as args]]
   (js-apply (eth web3) "getTransactionCount" args))
-
 
 (defn send-transaction!
   "Sends a transaction to the network.
@@ -670,16 +640,13 @@
   [web3 & [transaction-object :as args]]
   (js-apply (eth web3) "sendTransaction" args))
 
-
 (defn send-signed-transaction!
   [web3 & args]
   (js-apply (eth web3) "sendSignedTransaction" args))
 
-
 (defn sign
   [web3 & args]
   (js-apply (eth web3) "sign" args))
-
 
 (defn sign-transaction
   "Sign a transaction. Method is not documented in the web3.js docs. Not sure if it is safe.
@@ -694,7 +661,6 @@
   Returns signed transaction data."
   [web3 & [sign-tx-params private-key signed-tx :as args]]
   (js-apply (eth web3) "signTransaction" args))
-
 
 (defn call!
   "Executes a message call transaction, which is directly executed in the VM of
@@ -721,7 +687,6 @@
   [web3 & [call-object default-block :as args]]
   (js-apply (eth web3) "call" args))
 
-
 (defn estimate-gas
   "Executes a message call or transaction, which is directly executed in the VM
   of the node, but never mined into the blockchain and returns the amount of the
@@ -745,16 +710,13 @@
   [web3 & [call-object :as args]]
   (js-apply (eth web3) "estimateGas" args))
 
-
 (defn get-past-logs
   [web3 & args]
   (js-apply (eth web3) "getPastLogs" args))
 
-
 (defn get-work
   [web3 & args]
   (js-apply (eth web3) "getWork" args))
-
 
 (defn submit-work!
   [web3 & args]

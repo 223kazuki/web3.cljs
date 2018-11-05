@@ -1,28 +1,14 @@
-(ns cljs-web3.tests
+(ns web3.tests
   (:require [cljs.core.async :refer [<! >! chan]]
-            [cljs-web3.core :as web3]
-            [cljs-web3.utils :as web3-utils]
-            [cljs-web3.db :as web3-db]
-            [cljs-web3.eth :as web3-eth]
-            [cljs-web3.net :as web3-net]
-            [cljs-web3.personal :as web3-personal]
-            [cljs-web3.shh :as web3-shh]
-            [cljs-web3.async.eth :as web3-eth-async]
+            [web3.core :as web3]
+            [web3.utils :as web3-utils]
+            [web3.eth :as web3-eth]
             [cljs.test :refer-macros [deftest is testing run-tests use-fixtures async]]
             [print.foo :include-macros true])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (def w3 (web3/create-web3 "ws://localhost:8549/"))
 (def gas-limit 4500000)
-
-(def contract-source "
-  pragma solidity ^0.4.6;
-
-  contract test {
-    function multiply(uint a) returns(uint d) {
-      return a * 7;
-    }
-  }")
 
 (deftest web3-test
   (is (string? (web3/version w3)))
@@ -32,29 +18,29 @@
 
   #_ (let [create-contract-ch (chan)]
        (async done
-              (let [compiled (web3-eth/compile-solidity w3 contract-source)]
-                (is (map? compiled))
-                (is (number? (web3-eth/estimate-gas w3 compiled)))
-                (web3-eth/contract-new
-                 w3
-                 (:abi-definition (:info compiled))
-                 {:data (:code compiled)
-                  :gas gas-limit
-                  :from (first (web3-eth/accounts w3))}
-                 #(go (>! create-contract-ch [%1 %2]))))
+         (let [compiled (web3-eth/compile-solidity w3 contract-source)]
+           (is (map? compiled))
+           (is (number? (web3-eth/estimate-gas w3 compiled)))
+           (web3-eth/contract-new
+            w3
+            (:abi-definition (:info compiled))
+            {:data (:code compiled)
+             :gas gas-limit
+             :from (first (web3-eth/accounts w3))}
+            #(go (>! create-contract-ch [%1 %2]))))
 
-              (go
-                (let [[err Contract] (<! create-contract-ch)]
-                  (is (not err))
-                  (is Contract)
-                  (is (not (:address Contract)))
-                  (is (map? (web3-eth/get-transaction w3 (aget Contract "transactionHash")))))
+         (go
+           (let [[err Contract] (<! create-contract-ch)]
+             (is (not err))
+             (is Contract)
+             (is (not (:address Contract)))
+             (is (map? (web3-eth/get-transaction w3 (aget Contract "transactionHash")))))
 
-                (let [[err Contract] (<! create-contract-ch)]
-                  (is (not err))
-                  (is (aget Contract "address"))
-                  (is (string? (web3-eth/contract-call Contract :multiply 5)))))
-              (done))))
+           (let [[err Contract] (<! create-contract-ch)]
+             (is (not err))
+             (is (aget Contract "address"))
+             (is (string? (web3-eth/contract-call Contract :multiply 5)))))
+         (done))))
 
 (deftest web3-utils-test
   (is (web3-utils/hex? (web3-utils/random-hex 32)))
@@ -94,34 +80,34 @@
   (is (= (web3-utils/to-twos-complement "-1")
          "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")))
 
-(deftest web3-eth-test
-  (async done
-    (go
-      (let [[err accounts] (<! (web3-eth-async/get-accounts w3))
-            code "603d80600c6000396000f3007c01000000000000000000000000000000000000000000000000000000006000350463c6888fa18114602d57005b6007600435028060005260206000f3"
-            default-account (first accounts)]
-        (-> (web3-eth/send-transaction! w3 {:from default-account
-                                            :data code})
-            (web3-utils/then
-             (fn [{:keys [:contract-address]}]
-               (-> (web3-eth/send-transaction! w3 {:from default-account
-                                                   :to contract-address
-                                                   :data "1000000000000000"})
-                   (web3-utils/on :transaction-hash
-                                  (fn [hash]
-                                    (is (web3-utils/hex? hash))
-                                    (done)))))))))))
+#_(deftest web3-eth-test
+    (async done
+      (go
+        (let [[err accounts] (<! (web3-eth-async/get-accounts w3))
+              code "603d80600c6000396000f3007c01000000000000000000000000000000000000000000000000000000006000350463c6888fa18114602d57005b6007600435028060005260206000f3"
+              default-account (first accounts)]
+          (-> (web3-eth/send-transaction! w3 {:from default-account
+                                              :data code})
+              (web3-utils/then
+               (fn [{:keys [:contract-address]}]
+                 (-> (web3-eth/send-transaction! w3 {:from default-account
+                                                     :to contract-address
+                                                     :data "1000000000000000"})
+                     (web3-utils/on :transaction-hash
+                                    (fn [hash]
+                                      (is (web3-utils/hex? hash))
+                                      (done)))))))))))
 
-(deftest web3-eth-async-test
-  (async done
-    (go
-      (let [[err version] (<! (web3-eth-async/get-protocol-version w3))]
-        (is (not (js/isNaN (js/parseInt version)))))
-      (let [[err accounts] (<! (web3-eth-async/get-accounts w3))]
-        (is (seq accounts))
-        (web3-eth/set-default-account! w3 (first accounts))
-        (is (= (web3-eth/default-account w3) (first accounts))))
-      (done))))
+#_(deftest web3-eth-async-test
+    (async done
+      (go
+        (let [[err version] (<! (web3-eth-async/get-protocol-version w3))]
+          (is (not (js/isNaN (js/parseInt version)))))
+        (let [[err accounts] (<! (web3-eth-async/get-accounts w3))]
+          (is (seq accounts))
+          (web3-eth/set-default-account! w3 (first accounts))
+          (is (= (web3-eth/default-account w3) (first accounts))))
+        (done))))
 
 
 #_(deftest web3-eth-test

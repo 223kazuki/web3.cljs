@@ -1,4 +1,4 @@
-(ns cljs-web3.core
+(ns web3.core
   "ClojureScript wrapper around Web3 JavaScript API methods on the Web3 object.
 
   A `web3-instance` can be obtained in two ways:
@@ -15,9 +15,9 @@
      (create-web3 \"ws://localhost:8545/\"))`
 
   The Web3 JavaScript object is provided on the browser window."
-  (:require [cljs-web3.utils :as u :refer [js-apply js-prototype-apply]]
+  (:require [web3.utils :as u :refer [js-apply js-prototype-apply]]
             [goog.object]
-            [web3-1.0]))
+            [web3-cljs]))
 
 (defn version
   "Returns the current version."
